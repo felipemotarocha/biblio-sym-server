@@ -11,11 +11,19 @@ router.get("/", async (req, res) => {
     }
 });
 
+router.get("/:genre", async ({ params: { genre } }, res) => {
+    try {
+        res.status(200).send(await Book.findByGenre(genre));
+    } catch ({ message }) {
+        res.status(404).send(message);
+    }
+});
+
 router.post("/", async ({ body }, res) => {
     try {
-        const { name, quantity } = body;
+        const { title, quantity } = body;
 
-        const registeredBook = await Book.findOne({ name });
+        const registeredBook = await Book.findOne({ title });
 
         if (registeredBook) {
             registeredBook.quantity += quantity;
@@ -28,14 +36,6 @@ router.post("/", async ({ body }, res) => {
         }
     } catch ({ message }) {
         res.status(400).send(message);
-    }
-});
-
-router.get("/:genre", async ({ params: { genre } }, res) => {
-    try {
-        res.status(200).send(await Book.findByGenre(genre));
-    } catch ({ message }) {
-        res.status(404).send(message);
     }
 });
 

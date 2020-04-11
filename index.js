@@ -12,5 +12,8 @@ app.use(cors());
 const books = require("./routes/book/book.routes");
 app.use("/api/books", books);
 
+const genres = require("./routes/genre/genre.routes");
+app.use("/api/genres", genres);
+
 const port = 5000 || process.env.PORT;
 app.listen(port, () => console.log(`Listening on port ${port}`));
