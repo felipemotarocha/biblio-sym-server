@@ -11,6 +11,18 @@ router.get("/", async (req, res) => {
     }
 });
 
+router.get("/:id", async ({ params: { id } }, res) => {
+    try {
+        const book = await Book.findById(id);
+        if (!book) {
+            throw new Error("Book not found.");
+        }
+        res.status(200).send(book);
+    } catch (err) {
+        res.status(404).send(err.message);
+    }
+});
+
 router.get("/:genre", async ({ params: { genre } }, res) => {
     try {
         res.status(200).send(await Book.findByGenre(genre));
