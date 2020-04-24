@@ -5,6 +5,9 @@ const validator = require("validator");
 const JWT_SECRET_KEY = require("../../credentials/jwt/jwt.credential");
 
 const userSchema = new mongoose.Schema({
+    googleId: {
+        type: String,
+    },
     name: {
         type: String,
         required: true,
@@ -23,7 +26,6 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
         validate(value) {
             if (value.length < 7) {
                 throw new Error("Password must have at least 7 characters.");

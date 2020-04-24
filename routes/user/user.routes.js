@@ -57,4 +57,26 @@ router.post("/signout", auth, async (req, res) => {
     }
 });
 
+// Google OAuth
+router.post('/oauth/google', async ({ body: { email, name, googleId } }, res) => {
+    try {
+        const foundUser = await User.findOne({ email });
+        // User doesn't have an account
+        if (!foundUser) {
+            const newUser = new User({ googleId, email, name })
+            const token = await newUser.generateAuthToken();
+            res.status(200).send({ user: newUser, token });
+        }
+        // User already has an account
+        if (!foundUser.googleId) {
+            foundUser.googleId = googleId;
+            await foundUser.save();
+        }
+        const token = await foundUser.generateAuthToken();
+        res.status(200).send({ user: foundUser, token })
+    } catch (err) {
+        res.status(500).send(err);
+    }
+})
+
 module.exports = router;
