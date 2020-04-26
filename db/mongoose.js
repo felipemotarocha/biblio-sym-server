@@ -9,5 +9,3 @@ mongoose.connect(
         useCreateIndex: true,
     }
 );
-
-// mongodb+srv://fmrocha:fu43LRFfAQ0lI3vM@biblio-sym-cluster-weh7r.gcp.mongodb.net/data

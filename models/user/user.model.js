@@ -32,6 +32,12 @@ const userSchema = new mongoose.Schema({
             }
         },
     },
+    books: [
+        {
+            _id: false,
+            bookId: mongoose.SchemaTypes.ObjectId
+        },
+    ],
     tokens: [
         {
             token: {
@@ -43,26 +49,36 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.methods.generateAuthToken = async function () {
-    const token = jwt.sign({ _id: this._id.toString() }, JWT_SECRET_KEY);
+    try {
+        const token = jwt.sign({ _id: this._id.toString() }, JWT_SECRET_KEY);
 
-    this.tokens = this.tokens.concat({ token });
-    await this.save();
+        this.tokens = this.tokens.concat({ token });
+        await this.save();
 
-    return token;
+        return token;
+    } catch (err) {
+        throw new Error('Please authenticate and try again.');
+    }
+
 };
 
 userSchema.statics.findByCredentials = async (email, password) => {
-    const user = await User.findOne({ email });
-    if (!user) {
-        throw new Error("Algo de errado aconteceu. Tente novamente.");
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            throw new Error("Algo de errado aconteceu. Tente novamente.");
+        }
+
+        const isValidPassword = await bcrypt.compare(password, user.password);
+        if (!isValidPassword) {
+            throw new Error("Algo de errado aconteceu. Tente novamente.");
+        }
+
+        return user;
+    } catch (err) {
+        throw new Error('Something went wrong. Check the data and try again.');
     }
 
-    const isValidPassword = await bcrypt.compare(password, user.password);
-    if (!isValidPassword) {
-        throw new Error("Algo de errado aconteceu. Tente novamente.");
-    }
-
-    return user;
 };
 
 userSchema.pre("save", async function (next) {

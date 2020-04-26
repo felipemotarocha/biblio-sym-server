@@ -18,10 +18,15 @@ const bookSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    quantity: {
+    availableForLoan: {
         type: Number,
         required: true,
     },
+    onLoan: {
+        type: Number,
+        default: 0,
+        required: true,
+    }
 });
 
 bookSchema.statics.findByGenre = async (genre) => {

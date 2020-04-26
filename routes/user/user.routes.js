@@ -33,7 +33,7 @@ router.post("/", async ({ body: { name, email, password } }, res) => {
     }
 });
 
-router.post("/login", async ({ body: { email, password } }, res) => {
+router.post("/sign-in", async ({ body: { email, password } }, res) => {
     try {
         const user = await User.findByCredentials(email, password);
         const token = await user.generateAuthToken();
@@ -43,7 +43,7 @@ router.post("/login", async ({ body: { email, password } }, res) => {
     }
 });
 
-router.post("/signout", auth, async (req, res) => {
+router.post("/sign-out", auth, async (req, res) => {
     try {
         req.user.tokens = req.user.tokens.filter(
             (token) => token.token !== req.token
@@ -56,6 +56,19 @@ router.post("/signout", auth, async (req, res) => {
         res.status(400).send(err.message);
     }
 });
+
+// Add Books
+router.post('/add-books', auth, async ({ body: { bookIds }, user }, res) => {
+    try {
+        for (let bookId of bookIds) {
+            user.books = user.books.concat({ bookId });
+            await user.save();
+        }
+        res.status(200).send();
+    } catch (err) {
+        res.status(400).send(err.message);
+    }
+})
 
 // Google OAuth
 router.post('/oauth/google', async ({ body: { email, name, googleId } }, res) => {

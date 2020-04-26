@@ -33,12 +33,12 @@ router.get("/:genre", async ({ params: { genre } }, res) => {
 
 router.post("/", async ({ body }, res) => {
     try {
-        const { title, quantity } = body;
+        const { title, availableForLoan } = body;
 
         const registeredBook = await Book.findOne({ title });
 
         if (registeredBook) {
-            registeredBook.quantity += quantity;
+            registeredBook.availableForLoan += availableForLoan;
             await registeredBook.save();
             res.status(200).send(registeredBook);
         } else {
@@ -50,5 +50,20 @@ router.post("/", async ({ body }, res) => {
         res.status(400).send(message);
     }
 });
+
+router.post('/new-loan', async ({ body: { bookIds } }, res) => {
+    try {
+        for (let bookId of bookIds) {
+            const book = await Book.findById(bookId);
+            book.availableForLoan -= 1;
+            book.onLoan += 1;
+            await book.save();
+        }
+
+        res.status(200).send();
+    } catch (err) {
+        res.status(400).send(err.message);
+    }
+})
 
 module.exports = router;
