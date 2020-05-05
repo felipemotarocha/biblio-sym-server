@@ -1,6 +1,6 @@
 const express = require("express");
 const Book = require("../../models/book/book.model");
-const auth = require("../../middlewares/auth/auth.middleware");
+const Genre = require('../../models/genre/genre.model')
 
 const router = new express.Router();
 
@@ -34,23 +34,36 @@ router.get("/:genre", async ({ params: { genre } }, res) => {
 
 router.post("/", async ({ body }, res) => {
 	try {
-		const { title, availableForLoan } = body;
-
+		const { title, genre } = body;
 		const registeredBook = await Book.findOne({ title });
 
 		if (registeredBook) {
-			registeredBook.availableForLoan += availableForLoan;
-			await registeredBook.save();
-			res.status(200).send(registeredBook);
-		} else {
-			const book = new Book(body);
-			await book.save();
-			res.status(200).send(book);
+			throw new Error('This book already exists in the database.');
 		}
-	} catch ({ message }) {
-		res.status(400).send(message);
+
+		// Checking if entered Genre ID is valid
+		await Genre.findById(genre).catch(err => {
+			throw new Error('This genre does not exist.')
+		});
+
+		const book = new Book(body);
+		await book.save();
+		res.status(200).send(book);
+	} catch (err) {
+		res.status(400).send(err.message);
 	}
 });
+
+router.post('/add/:bookId', async ({ body: { quantity }, params: { bookId } }, res) => {
+	try {
+		const book = await Book.findById(bookId);
+		book.availableForLoan += quantity;
+		await book.save();
+		res.status(200).send(book);
+	} catch (err) {
+		res.status(400).send(err);
+	}
+})
 
 router.post("/new-loan", async ({ body: { bookIds } }, res) => {
 	try {

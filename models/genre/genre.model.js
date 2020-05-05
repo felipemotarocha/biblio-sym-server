@@ -11,7 +11,7 @@ const genreSchema = new mongoose.Schema({
 
 genreSchema.virtual("books", {
     ref: "Book",
-    localField: "title",
+    localField: "_id",
     foreignField: "genre",
 });
 
