@@ -34,8 +34,11 @@ const userSchema = new mongoose.Schema({
     },
     books: [
         {
-            _id: false,
-            bookId: mongoose.SchemaTypes.ObjectId
+            _id: mongoose.SchemaTypes.ObjectId,
+            title: String,
+            author: String,
+            genre: mongoose.SchemaTypes.ObjectId,
+            image: String,
         },
     ],
     tokens: [

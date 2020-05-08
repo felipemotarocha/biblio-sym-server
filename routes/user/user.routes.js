@@ -65,13 +65,13 @@ router.post("/sign-out", auth, async (req, res) => {
 });
 
 // Add Books
-router.post("/add-books", auth, async ({ body: { bookIds }, user }, res) => {
+router.post("/add-books", auth, async ({ body: { books }, user }, res) => {
 	try {
-		for (let bookId of bookIds) {
-			user.books = user.books.concat({ bookId });
-			await user.save();
-		}
-		res.status(200).send();
+		books.forEach(({ _id, title, author, genre, image }) => {
+			user.books = user.books.concat({ _id, title, author, genre, image });
+		});
+		await user.save();
+		res.status(200).send(user.books);
 	} catch (err) {
 		res.status(400).send(err.message);
 	}
