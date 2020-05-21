@@ -36,11 +36,12 @@ router.get("/my-books", auth, async ({ user }, res) => {
 router.post("/", async ({ body: { name, email, password } }, res) => {
 	try {
 		const user = new User({ name, email, password });
-		const token = await user.generateAuthToken();
+		console.log(user);
 		await user.save();
+		const token = await user.generateAuthToken();
 		res.status(201).send({ user, token });
 	} catch (err) {
-		res.status(400).send(err.message);
+		res.status(400).send(err);
 	}
 });
 
@@ -64,7 +65,7 @@ router.post("/sign-out", auth, async (req, res) => {
 
 		res.status(200).send(req.user);
 	} catch (err) {
-		res.status(400).send(err.message);
+		res.status(400).send(err);
 	}
 });
 
