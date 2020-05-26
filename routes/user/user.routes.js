@@ -36,12 +36,13 @@ router.get("/my-books", auth, async ({ user }, res) => {
 router.post("/", async ({ body: { name, email, password } }, res) => {
 	try {
 		const user = new User({ name, email, password });
-		console.log(user);
 		await user.save();
 		const token = await user.generateAuthToken();
 		res.status(201).send({ user, token });
 	} catch (err) {
-		res.status(400).send(err);
+		res
+			.status(400)
+			.send("Something went wrong :( Check the inserted data and try again.");
 	}
 });
 
@@ -51,7 +52,9 @@ router.post("/sign-in", async ({ body: { email, password } }, res) => {
 		const token = await user.generateAuthToken();
 		res.status(200).send({ user, token });
 	} catch (err) {
-		res.status(404).send(err);
+		res
+			.status(404)
+			.send("Something went wrong :( Check the inserted data and try again.");
 	}
 });
 
@@ -80,6 +83,7 @@ router.post(
 				const newUser = new User({ googleId, email, name });
 				const token = await newUser.generateAuthToken();
 				res.status(200).send({ user: newUser, token });
+				return;
 			}
 			// User already has an account
 			if (!foundUser.googleId) {

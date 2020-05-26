@@ -5,6 +5,10 @@ const validator = require("validator");
 const JWT_SECRET_KEY = require("../../credentials/jwt/jwt.credential");
 
 const userSchema = new mongoose.Schema({
+	isAdmin: {
+		type: Boolean,
+		default: false,
+	},
 	googleId: {
 		type: String,
 	},
@@ -71,8 +75,7 @@ userSchema.statics.findByCredentials = async (email, password) => {
 			throw new Error({
 				errors: {
 					user: {
-						message:
-							"Somethign went wrong. Check the data and try again.",
+						message: "Somethign went wrong. Check the data and try again.",
 					},
 				},
 			});
@@ -88,8 +91,7 @@ userSchema.statics.findByCredentials = async (email, password) => {
 		res.json({
 			errors: {
 				user: {
-					message:
-						"Somethign went wrong. Check the data and try again.",
+					message: "Somethign went wrong. Check the data and try again.",
 				},
 			},
 		});
