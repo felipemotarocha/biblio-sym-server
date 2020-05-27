@@ -45,9 +45,17 @@ router.get("/:genre/books", async ({ params }, res) => {
 
 router.post("/", async ({ body: { title } }, res) => {
 	try {
-		const genre = new Genre({ title });
+		const existentGenre = await Genre.findOne({ title });
+		if (existentGenre) {
+			throw new Error("This genre already exists.");
+		}
+
+		const genre = new Genre({ title: title.toLowerCase() });
 		await genre.save();
-		res.status(201).send(genre);
+
+		const genres = await Genre.find({});
+
+		res.status(201).send({ addedGenre: genre, allGenres: genres });
 	} catch (err) {
 		res.status(400).send(err.message);
 	}
